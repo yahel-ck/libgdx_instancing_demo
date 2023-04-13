@@ -1,3 +1,3 @@
-includeBuild "/Users/yahel_ck/repos/libgdx"
-includeBuild "/Users/yahel_ck/repos/gdx-gltf"
+includeBuild "../libgdx"
+includeBuild "../gdx-gltf"
 include 'android', 'ios', 'core'
