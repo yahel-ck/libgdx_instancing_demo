@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
 import com.badlogic.gdx.graphics.g3d.model.Node
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
 import com.badlogic.gdx.math.Matrix4
-import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -31,7 +30,6 @@ import kotlin.random.Random
 class Test3DGame : Game() {
     private val camera = PerspectiveCamera()
     private val rand = Random(System.nanoTime())
-    private val v3 = Vector3()
 
     private var sceneManager: SceneManager? = null
     private var sceneAsset: SceneAsset? = null
