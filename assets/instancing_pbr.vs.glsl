@@ -208,11 +208,11 @@ attribute vec2 a_boneWeight7;
 #endif
 #endif
 
-#ifdef instancedFlag
-attribute mat4 u_worldTrans;
-#else
+//#ifdef instancedFlag
+//attribute mat4 u_worldTrans;
+//#else
 uniform mat4 u_worldTrans;
-#endif //instancedFlag
+//#endif //instancedFlag
 
 #if defined(numBones)
 #if numBones > 0

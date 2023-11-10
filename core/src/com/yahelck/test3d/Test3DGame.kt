@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
 import com.badlogic.gdx.graphics.g3d.model.Node
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
 import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -23,13 +24,17 @@ import net.mgsx.gltf.scene3d.scene.Scene
 import net.mgsx.gltf.scene3d.scene.SceneAsset
 import net.mgsx.gltf.scene3d.scene.SceneManager
 import net.mgsx.gltf.scene3d.scene.SceneSkybox
+import net.mgsx.gltf.scene3d.shaders.PBRShaderConfig
+import net.mgsx.gltf.scene3d.shaders.PBRShaderProvider
 import net.mgsx.gltf.scene3d.utils.IBLBuilder
 import kotlin.random.Random
 
 
 class Test3DGame : Game() {
     private val camera = PerspectiveCamera()
+    private var cameraController: CameraInputController? = null
     private val rand = Random(System.nanoTime())
+    private val v = Vector3()
 
     private var sceneManager: SceneManager? = null
     private var sceneAsset: SceneAsset? = null
@@ -40,10 +45,11 @@ class Test3DGame : Game() {
 
     override fun create() {
         setupCamera()
-        Gdx.input.inputProcessor = CameraInputController(camera)
+        cameraController = CameraInputController(camera)
+        Gdx.input.inputProcessor = cameraController
         createSceneManager()
         sceneManager!!.camera = camera
-        createModel()
+        createModels()
         sceneManager!!.addScene(Scene(sceneAsset!!.scene))
         createScreen()
     }
@@ -61,23 +67,33 @@ class Test3DGame : Game() {
     }
 
     private fun createSceneManager() {
-        sceneManager = SceneManager().apply {
-            // setup quick IBL (image based lighting)
-            val light = DirectionalLightEx().set(1f, 1f, 1f, -1f, -0.8f, 0.2f)
-            val fogColor = Color(1f, 1f, 1f, 1f)
-            val iblBuilder = IBLBuilder.createOutdoor(light).apply {
-                farGroundColor.set(fogColor) // .set(0.94f, 0.40f, 0.36f, 1f)
-                nearGroundColor.set(0.71f, 0.42f, 0.34f, 1f)
-                farSkyColor.set(fogColor) // .set(.9f, .95f, 1f, 1f)
-                nearSkyColor.set(.7f, .8f, 1f, 1f)
-            }
-            val diffuseCubemap = iblBuilder.buildIrradianceMap(256)
-            val specularCubemap = iblBuilder.buildRadianceMap(10)
-            val envCubemap = iblBuilder.buildEnvMap(1024)
-            iblBuilder.dispose()
+        // setup quick IBL (image based lighting)
+        val light = DirectionalLightEx().set(1f, 1f, 1f, -1f, -0.8f, 0.2f)
+        val fogColor = Color(1f, 1f, 1f, 1f)
+        val iblBuilder = IBLBuilder.createOutdoor(light).apply {
+            farGroundColor.set(fogColor) // .set(0.94f, 0.40f, 0.36f, 1f)
+            nearGroundColor.set(0.71f, 0.42f, 0.34f, 1f)
+            farSkyColor.set(fogColor) // .set(.9f, .95f, 1f, 1f)
+            nearSkyColor.set(.7f, .8f, 1f, 1f)
+        }
+        val diffuseCubemap = iblBuilder.buildIrradianceMap(256)
+        val specularCubemap = iblBuilder.buildRadianceMap(10)
+        val envCubemap = iblBuilder.buildEnvMap(1024)
+        iblBuilder.dispose()
 
+        brdfLUT = Texture(Gdx.files.classpath("net/mgsx/gltf/shaders/brdfLUT.png"))
+
+        val shaderProviderConfig = PBRShaderConfig().apply {
+            vertexShader = Gdx.files.internal("instancing_pbr.vs.glsl").readString()
+            fragmentShader = PBRShaderProvider.getDefaultFragmentShader()
+            numBones = 24
+        }
+
+        sceneManager = SceneManager(
+            PBRShaderProvider.createDefault(shaderProviderConfig),
+            PBRShaderProvider.createDefaultDepth(24)
+        ).apply {
             setAmbientLight(1f)
-            brdfLUT = Texture(Gdx.files.classpath("net/mgsx/gltf/shaders/brdfLUT.png"))
             environment.apply {
                 set(PBRTextureAttribute(PBRTextureAttribute.BRDFLUTTexture, brdfLUT))
                 set(PBRCubemapAttribute.createSpecularEnv(specularCubemap))
@@ -85,12 +101,11 @@ class Test3DGame : Game() {
                 set(ColorAttribute(ColorAttribute.Fog, fogColor))
                 set(FogAttribute(FogAttribute.FogEquation).set(3f, 130f, 0.8f))
             }
-
             skyBox = SceneSkybox(envCubemap)
         }
     }
 
-    private fun createModel() {
+    private fun createModels() {
         sceneAsset = loadScene()
         val model: Model = sceneAsset!!.scene.model
         model.calculateTransforms()
@@ -121,7 +136,6 @@ class Test3DGame : Game() {
         val x = rand.nextFloat() * 400f - 200f
         val y = rand.nextFloat() * 400f - 200f
         val z = rand.nextFloat() * 400f - 200f
-        // Gdx.app.log("InstancedRendering", "Instance Translate: ($x, $y, $z)")
         out.translate(x, y, z)
     }
 
@@ -143,11 +157,17 @@ class Test3DGame : Game() {
     override fun render() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
+        /*cameraController?.apply {
+            v.set(camera.direction).nor().scl(CAMERA_SPEED * Gdx.graphics.deltaTime)
+            target.add(v)
+            camera.position.add(v)
+            camera.update()
+        }*/
         sceneManager?.apply {
             update(Gdx.graphics.deltaTime)
             render()
         }
-        debugLabel?.setText(camera.position.toString())
+        debugLabel?.setText("${Gdx.graphics.framesPerSecond} ${camera.position}")
         super.render()
     }
 
@@ -156,8 +176,9 @@ class Test3DGame : Game() {
     }
 
     companion object {
-        const val INSTANCE_COUNT = 10000
+        const val INSTANCE_COUNT = 5000
         const val MAT_FLOAT_COUNT = 4 * 4
+        const val CAMERA_SPEED = 5f
 
         private fun getMatrix4Attributes(): Array<VertexAttribute> {
             return Array(4) { index ->

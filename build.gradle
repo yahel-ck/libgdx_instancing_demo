@@ -2,13 +2,9 @@ buildscript {
     ext {
         appName = "Test3D"
         kotlinVersion = '1.8.20'
-        gdxVersion = '1.11.3-SNAPSHOT'
-        roboVMVersion = '2.3.17'
-        box2DLightsVersion = '1.5'
-        ashleyVersion = '1.7.4'
-        aiVersion = '1.8.2'
-        gdxControllersVersion = '2.2.1'
-        gltfVersion = '2.1.10'
+        gdxVersion = '1.12.1'
+        roboVMVersion = '2.3.20'
+        gltfVersion = '2.1.0'
     }
 
     repositories {
@@ -19,7 +15,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$roboVMVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
@@ -49,14 +45,14 @@ project(":android") {
 
     dependencies {
         implementation project(":core")
+        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
-        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-        implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
@@ -73,10 +69,10 @@ project(":ios") {
         implementation project(":core")
         implementation "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
         implementation "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         implementation "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
+        api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
     }
 }
 
@@ -85,9 +81,9 @@ project(":core") {
 
 
     dependencies {
-        implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
         implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        implementation "com.github.mgsx-dev.gdx-gltf:gltf:$gltfVersion"
-        implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.github.mgsx-dev.gdx-gltf:gltf:$gltfVersion"
+        api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     }
 }
