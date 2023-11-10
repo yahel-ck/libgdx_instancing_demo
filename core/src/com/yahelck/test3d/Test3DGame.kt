@@ -133,9 +133,9 @@ class Test3DGame : Game() {
             rand.nextFloat(),
             rand.nextFloat() * 360f
         )
-        val x = rand.nextFloat() * 400f - 200f
-        val y = rand.nextFloat() * 400f - 200f
-        val z = rand.nextFloat() * 400f - 200f
+        val x = (rand.nextFloat() - 0.5f) * SPAWN_BOX_SIDE
+        val y = (rand.nextFloat() - 0.5f) * SPAWN_BOX_SIDE
+        val z = (rand.nextFloat() - 0.5f) * SPAWN_BOX_SIDE
         out.translate(x, y, z)
     }
 
@@ -148,8 +148,8 @@ class Test3DGame : Game() {
         screen = StageScreen().apply {
             stage.addActor(Table().apply {
                 setFillParent(true)
-                align(Align.topLeft)
-                add(debugLabel).pad(0.03f * Gdx.graphics.width)
+                align(Align.bottomLeft)
+                add(debugLabel).pad(0.05f * Gdx.graphics.width)
             })
         }
     }
@@ -157,17 +157,17 @@ class Test3DGame : Game() {
     override fun render() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
-        /*cameraController?.apply {
-            v.set(camera.direction).nor().scl(CAMERA_SPEED * Gdx.graphics.deltaTime)
-            target.add(v)
-            camera.position.add(v)
+        cameraController?.apply {
+            // v.set(camera.direction).nor().scl(CAMERA_SPEED * Gdx.graphics.deltaTime)
+            // target.add(v)
+            // camera.position.add(v)
             camera.update()
-        }*/
+        }
         sceneManager?.apply {
             update(Gdx.graphics.deltaTime)
             render()
         }
-        debugLabel?.setText("${Gdx.graphics.framesPerSecond} ${camera.position}")
+        debugLabel?.setText("$INSTANCE_COUNT instances, ${Gdx.graphics.framesPerSecond} fps, ${camera.position}")
         super.render()
     }
 
@@ -176,9 +176,10 @@ class Test3DGame : Game() {
     }
 
     companion object {
-        const val INSTANCE_COUNT = 5000
         const val MAT_FLOAT_COUNT = 4 * 4
         const val CAMERA_SPEED = 5f
+        const val SPAWN_BOX_SIDE = 50
+        const val INSTANCE_COUNT: Int = SPAWN_BOX_SIDE * SPAWN_BOX_SIDE * SPAWN_BOX_SIDE / 2000
 
         private fun getMatrix4Attributes(): Array<VertexAttribute> {
             return Array(4) { index ->
@@ -218,7 +219,7 @@ class Test3DGame : Game() {
         private fun loadFont(): BitmapFont {
             val generator = FreeTypeFontGenerator(Gdx.files.internal("SourceCodePro-Black.ttf"))
             val parameter = FreeTypeFontParameter()
-            parameter.size = 22
+            parameter.size = (Gdx.graphics.width * 0.03f).toInt()
             val font12 = generator.generateFont(parameter)
             generator.dispose()
             return font12
