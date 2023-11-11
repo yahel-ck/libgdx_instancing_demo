@@ -178,7 +178,7 @@ class Test3DGame : Game() {
     companion object {
         const val MAT_FLOAT_COUNT = 4 * 4
         const val CAMERA_SPEED = 5f
-        const val SPAWN_BOX_SIDE = 100
+        const val SPAWN_BOX_SIDE = 200
         const val INSTANCE_COUNT: Int = SPAWN_BOX_SIDE * SPAWN_BOX_SIDE * SPAWN_BOX_SIDE / 2000
 
         private fun getMatrix4Attributes(): Array<VertexAttribute> {
