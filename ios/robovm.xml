@@ -45,4 +45,11 @@
     <framework>AVFoundation</framework>
     <framework>GameController</framework>
   </frameworks>
+  <tools>
+    <linker>
+      <flags>
+        <flag>-ld_classic</flag>
+      </flags>
+    </linker>
+  </tools>
 </config>
