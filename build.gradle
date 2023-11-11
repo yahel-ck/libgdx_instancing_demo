@@ -2,7 +2,7 @@ buildscript {
     ext {
         appName = "Test3D"
         kotlinVersion = '1.8.20'
-        gdxVersion = '1.12.1'
+        gdxVersion = '1.12.2-SNAPSHOT'
         roboVMVersion = '2.3.20'
         gltfVersion = '2.1.0'
     }
