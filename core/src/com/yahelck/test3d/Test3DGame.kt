@@ -33,7 +33,7 @@ import kotlin.random.Random
 class Test3DGame : Game() {
     private val camera = PerspectiveCamera()
     private var cameraController: CameraInputController? = null
-    private val rand = Random(System.nanoTime())
+    private val rand = Random(123456789L)
     private val v = Vector3()
 
     private var sceneManager: SceneManager? = null
