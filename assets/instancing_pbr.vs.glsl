@@ -212,6 +212,9 @@ uniform mat4 u_worldTrans;
 
 #ifdef a_worldTrans_instancedFlag
 attribute mat4 a_worldTrans;
+#define worldTrans var_worldTrans
+#else
+#define worldTrans u_worldTrans
 #endif //a_worldTrans_instancedFlag
 
 #if defined(numBones)
@@ -231,9 +234,7 @@ void main() {
     #endif
 
     #ifdef a_worldTrans_instancedFlag
-    mat4 worldTrans = a_worldTrans * u_worldTrans;
-    #elif
-    mat4 worldTrans = u_worldTrans;
+    mat4 var_worldTrans = a_worldTrans * u_worldTrans;
     #endif
 
     #ifdef textureCoord1Flag
@@ -399,5 +400,4 @@ void main() {
     v_normal = normalize(vec3(u_normalMatrix * normal.xyz));
     #endif
     #endif // normalFlag
-
 }
