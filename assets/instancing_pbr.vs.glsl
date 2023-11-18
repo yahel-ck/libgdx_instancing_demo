@@ -208,11 +208,11 @@ attribute vec2 a_boneWeight7;
 #endif
 #endif
 
-#ifdef u_worldTrans_instancedFlag
-attribute mat4 u_worldTrans;
-#else
 uniform mat4 u_worldTrans;
-#endif //u_worldTrans_instancedFlag
+
+#ifdef a_worldTrans_instancedFlag
+attribute mat4 a_worldTrans;
+#endif //a_worldTrans_instancedFlag
 
 #if defined(numBones)
 #if numBones > 0
@@ -228,6 +228,12 @@ varying vec3 v_shadowMapUv;
 void main() {
     #ifdef textureFlag
     v_texCoord0 = (u_texCoord0Transform * vec3(a_texCoord0, 1.0)).xy;
+    #endif
+
+    #ifdef a_worldTrans_instancedFlag
+    mat4 worldTrans = a_worldTrans * u_worldTrans;
+    #elif
+    mat4 worldTrans = u_worldTrans;
     #endif
 
     #ifdef textureCoord1Flag
@@ -297,9 +303,9 @@ void main() {
     #endif
 
     #ifdef skinningFlag
-    vec4 pos = u_worldTrans * skinning * vec4(morph_pos, 1.0);
+    vec4 pos = worldTrans * skinning * vec4(morph_pos, 1.0);
     #else
-    vec4 pos = u_worldTrans * vec4(morph_pos, 1.0);
+    vec4 pos = worldTrans * vec4(morph_pos, 1.0);
     #endif
 
     v_position = vec3(pos.xyz) / pos.w;
@@ -386,7 +392,7 @@ void main() {
 
 
     vec3 normalW = normalize(vec3(u_normalMatrix * normal.xyz));
-    vec3 tangentW = normalize(vec3(u_worldTrans * vec4(tangent, 0.0)));
+    vec3 tangentW = normalize(vec3(worldTrans * vec4(tangent, 0.0)));
     vec3 bitangentW = cross(normalW, tangentW) * a_tangent.w;
     v_TBN = mat3(tangentW, bitangentW, normalW);
     #else // tangentFlag != 1

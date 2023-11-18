@@ -109,13 +109,11 @@ class Test3DGame : Game() {
         sceneAsset = loadScene()
         val model: Model = sceneAsset!!.scene.model
         model.calculateTransforms()
-        val modelTransform = model.globalTransform
 
         val mat = Matrix4()
         val transforms = FloatArray(INSTANCE_COUNT * MAT_FLOAT_COUNT)
         repeat(INSTANCE_COUNT) { index ->
             setRandomTransform(mat)
-            mat.mul(modelTransform)
             mat.values.copyInto(transforms, index * MAT_FLOAT_COUNT)
         }
 
@@ -183,37 +181,12 @@ class Test3DGame : Game() {
 
         private fun getMatrix4Attributes(): Array<VertexAttribute> {
             return Array(4) { index ->
-                VertexAttribute(VertexAttributes.Usage.Generic, 4, "u_worldTrans", index)
+                VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_worldTrans", index)
             }
         }
 
         private fun loadScene(): SceneAsset {
             return GLTFLoader().load(Gdx.files.internal("stone_pillar.gltf"))
-        }
-
-        private val Model.globalTransform: Matrix4
-            get() {
-                var leafNode: Node? = null
-                nodes.forEachRecursive {
-                    if (it.parts.size > 1 || (it.parts.size == 1 && leafNode != null)) {
-                        throw UnsupportedOperationException(
-                            "Can't find unique globalTransform for this model (it has more than one NodeParts)"
-                        )
-                    } else if (it.parts.size > 0) {
-                        leafNode = it
-                    }
-                }
-                if (leafNode == null)
-                    throw UnsupportedOperationException("Can't find globalTransform for this model (it has no NodeParts)")
-                else
-                    return leafNode!!.globalTransform
-            }
-
-        private fun Iterable<Node>.forEachRecursive(block: (Node) -> Unit) {
-            this.forEach {
-                block(it)
-                it.children.forEachRecursive(block)
-            }
         }
 
         private fun loadFont(): BitmapFont {
