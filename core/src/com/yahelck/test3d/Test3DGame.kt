@@ -156,9 +156,9 @@ class Test3DGame : Game() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
         cameraController?.apply {
-            // v.set(camera.direction).nor().scl(CAMERA_SPEED * Gdx.graphics.deltaTime)
-            // target.add(v)
-            // camera.position.add(v)
+            v.set(camera.direction).nor().scl(CAMERA_SPEED * Gdx.graphics.deltaTime)
+            target.add(v)
+            camera.position.add(v)
             camera.update()
         }
         sceneManager?.apply {
@@ -175,7 +175,7 @@ class Test3DGame : Game() {
 
     companion object {
         const val MAT_FLOAT_COUNT = 4 * 4
-        const val CAMERA_SPEED = 5f
+        const val CAMERA_SPEED = 16f
         const val SPAWN_BOX_SIDE = 200
         const val INSTANCE_COUNT: Int = SPAWN_BOX_SIDE * SPAWN_BOX_SIDE * SPAWN_BOX_SIDE / 2000
 
