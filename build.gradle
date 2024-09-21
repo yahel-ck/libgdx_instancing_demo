@@ -45,8 +45,10 @@ project(":android") {
 
     dependencies {
         implementation project(":core")
-        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+        implementation "androidx.appcompat:appcompat:1.6.1"
+
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
