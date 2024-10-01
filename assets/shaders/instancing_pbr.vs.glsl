@@ -123,7 +123,12 @@ attribute vec4 a_color;
 
 #ifdef normalFlag
 attribute vec3 a_normal;
+#ifdef a_worldTrans_instancedFlag
+#define normalMatrixExp transpose(inverse(mat3(worldTrans)))
+#else
 uniform mat3 u_normalMatrix;
+#define normalMatrixExp u_normalMatrix
+#endif
 #ifdef tangentFlag
 varying mat3 v_TBN;
 #else
@@ -429,12 +434,12 @@ void main() {
     #endif
 
 
-    vec3 normalW = normalize(vec3(u_normalMatrix * normal.xyz));
+    vec3 normalW = normalize(vec3(normalMatrixExp * normal.xyz));
     vec3 tangentW = normalize(vec3(worldTrans * vec4(tangent, 0.0)));
     vec3 bitangentW = cross(normalW, tangentW) * a_tangent.w;
     v_TBN = mat3(tangentW, bitangentW, normalW);
     #else // tangentFlag != 1
-    v_normal = normalize(vec3(u_normalMatrix * normal.xyz));
+    v_normal = normalize(vec3(normalMatrixExp * normal.xyz));
     #endif
     #endif // normalFlag
 }
